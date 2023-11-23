@@ -4,11 +4,14 @@ import { BrowserRouter as Router } from "react-router-dom";
 
 import { App } from "./components/app/App";
 import reportWebVitals from "./reportWebVitals";
+import { createStandaloneToast } from "@chakra-ui/react";
+const { ToastContainer } = createStandaloneToast();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
         <Router>
             <App />
+            <ToastContainer />
         </Router>
     </React.StrictMode>
 );
