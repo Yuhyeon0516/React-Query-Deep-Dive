@@ -44,7 +44,6 @@ export function Calendar(): ReactElement {
                     position="absolute"
                     right="10px"
                     checked={!showAll}
-                    isChecked
                     onChange={() => setShowAll((prevValue) => !prevValue)}
                 >
                     Only show available
