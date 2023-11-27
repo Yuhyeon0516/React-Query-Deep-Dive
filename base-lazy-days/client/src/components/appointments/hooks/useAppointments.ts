@@ -1,6 +1,6 @@
 // @ts-nocheck
 import dayjs from "dayjs";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 import { axiosInstance } from "../../../axiosInstance";
 import { queryKeys } from "../../../react-query/constants";
@@ -8,7 +8,7 @@ import { useUser } from "../../user/hooks/useUser";
 import { AppointmentDateMap } from "../types";
 import { getAvailableAppointments } from "../utils";
 import { getMonthYearDetails, getNewMonthYear, MonthYear } from "./monthYear";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 // for useQuery call
 async function getAppointments(
@@ -63,6 +63,22 @@ export function useAppointments(): UseAppointments {
     /** ****************** END 2: filter appointments  ******************** */
     /** ****************** START 3: useQuery  ***************************** */
     // useQuery call for appointments for the current monthYear
+
+    // prefetch next month when monthYear changes
+    const queryClient = useQueryClient();
+
+    useEffect(() => {
+        const newMonthYear = getNewMonthYear(monthYear, 1);
+        queryClient.prefetchQuery({
+            queryKey: [
+                queryKeys.appointments,
+                newMonthYear.year,
+                newMonthYear.month,
+            ],
+            queryFn: () =>
+                getAppointments(newMonthYear.year, newMonthYear.month),
+        });
+    }, [queryClient, monthYear]);
 
     // TODO: update with useQuery!
     // Notes:
