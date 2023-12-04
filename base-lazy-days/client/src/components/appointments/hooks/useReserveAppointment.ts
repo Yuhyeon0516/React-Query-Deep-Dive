@@ -1,4 +1,8 @@
-import { UseMutateFunction, useMutation } from "@tanstack/react-query";
+import {
+    UseMutateFunction,
+    useMutation,
+    useQueryClient,
+} from "@tanstack/react-query";
 import { Appointment } from "../../../../../shared/types";
 import { axiosInstance } from "../../../axiosInstance";
 import { queryKeys } from "../../../react-query/constants";
@@ -26,9 +30,19 @@ export function useReserveAppointment(): UseMutateFunction<
 > {
     const { user } = useUser();
     const toast = useCustomToast();
+    const queryClient = useQueryClient();
     const { mutate } = useMutation({
         mutationFn: (appointment: Appointment) =>
             setAppointmentUser(appointment, user.id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: [queryKeys.appointments],
+            });
+            toast({
+                title: "You have reserved the appointment!",
+                status: "success",
+            });
+        },
     });
 
     return mutate;
