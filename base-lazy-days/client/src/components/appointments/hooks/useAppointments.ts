@@ -90,7 +90,7 @@ export function useAppointments(): UseAppointments {
             queryFn: () =>
                 getAppointments(newMonthYear.year, newMonthYear.month),
             staleTime: 0,
-            cacheTime: 300000,
+            gcTime: 300000,
         });
     }, [queryClient, monthYear]);
 
@@ -108,7 +108,7 @@ export function useAppointments(): UseAppointments {
         queryFn: () => getAppointments(monthYear.year, monthYear.month),
         select: showAll ? undefined : selectFunction,
         staleTime: 0,
-        cacheTime: 300000,
+        gcTime: 300000,
         refetchOnMount: true,
         refetchOnReconnect: true,
         refetchOnWindowFocus: true,
