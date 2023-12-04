@@ -32,16 +32,19 @@ export function useUser(): UseUser {
     const { data: user } = useQuery({
         queryKey: [queryKeys.user],
         queryFn: () => getUser(user),
+        initialData: getStoredUser,
     });
 
     // meant to be called from useAuth
     function updateUser(newUser: User): void {
         queryClient.setQueryData([queryKeys.user], newUser);
+        setStoredUser(newUser);
     }
 
     // meant to be called from useAuth
     function clearUser() {
         queryClient.setQueryData([queryKeys.user], null);
+        clearStoredUser();
     }
 
     return { user, updateUser, clearUser };
