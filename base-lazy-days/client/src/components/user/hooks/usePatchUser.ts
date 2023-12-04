@@ -3,8 +3,13 @@ import jsonpatch from "fast-json-patch";
 import type { User } from "../../../../../shared/types";
 import { axiosInstance, getJWTHeader } from "../../../axiosInstance";
 import { useUser } from "./useUser";
-import { UseMutateFunction, useMutation } from "@tanstack/react-query";
+import {
+    UseMutateFunction,
+    useMutation,
+    useQueryClient,
+} from "@tanstack/react-query";
 import { useCustomToast } from "components/app/hooks/useCustomToast";
+import { queryKeys } from "react-query/constants";
 
 // for when we need a server function
 async function patchUserOnServer(
@@ -34,17 +39,43 @@ export function usePatchUser(): UseMutateFunction<
 > {
     const { user, updateUser } = useUser();
     const toast = useCustomToast();
+    const queryClient = useQueryClient();
 
     const { mutate: patchUser } = useMutation({
         mutationFn: (newUserData: User) => patchUserOnServer(newUserData, user),
         onSuccess: (userData: User | null) => {
             if (user) {
-                updateUser(userData);
                 toast({
                     title: "User updated!",
                     status: "success",
                 });
             }
+        },
+        onMutate: async (newData: User | null) => {
+            queryClient.cancelQueries({
+                queryKey: [queryKeys.user],
+            });
+
+            const previousUserData: User = queryClient.getQueryData([
+                queryKeys.user,
+            ]);
+            updateUser(newData);
+
+            return { previousUserData };
+        },
+        onError: (error, newData, context) => {
+            if (context.previousUserData) {
+                updateUser(context.previousUserData);
+                toast({
+                    title: "update failed, restoring previous values",
+                    status: "warning",
+                });
+            }
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({
+                queryKey: [queryKeys.user],
+            });
         },
     });
 
