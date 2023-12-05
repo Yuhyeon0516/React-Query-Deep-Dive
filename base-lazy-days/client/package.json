@@ -39,6 +39,7 @@
     "formik": "^2.2.6",
     "framer-motion": "^10.16.5",
     "image-webpack-loader": "^7.0.1",
+    "msw": "^2.0.10",
     "prettier": "^2.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -47,7 +48,7 @@
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^5.0.1",
-    "typescript": "4.2.4",
+    "typescript": "4.7",
     "web-vitals": "^1.1.1"
   },
   "scripts": {
